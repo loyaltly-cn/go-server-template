@@ -1,0 +1,52 @@
+version: '3'
+
+vars:
+  MAIN: ./cmd/server/main.go
+  APP_NAME: server
+
+tasks:
+
+  # 🚀 启动服务（开发）
+  run:
+    desc: 启动服务（含swagger生成）
+    cmds:
+      - task: swagger
+      - go run {{.MAIN}}
+
+  # 📦 构建项目
+  build:
+    desc: 构建二进制
+    cmds:
+      - task: swagger
+      - go build -o bin/{{.APP_NAME}} {{.MAIN}}
+
+  # 📘 生成 Swagger
+  swagger:
+    desc: 生成 Swagger 文档
+    cmds:
+      - swag init -g cmd/server/main.go --parseDependency --parseInternal
+
+  # 🧹 清理
+  clean:
+    desc: 清理编译产物
+    cmds:
+      - rm -rf bin
+      - rm -rf docs/swagger.json docs/swagger.yaml
+
+  # 🧪 测试
+  test:
+    desc: 运行测试
+    cmds:
+      - go test ./...
+
+  # 🧼 格式化代码
+  fmt:
+    desc: 格式化代码
+    cmds:
+      - go fmt ./...
+
+  # 📦 依赖整理
+  tidy:
+    desc: go mod tidy
+    cmds:
+      - go mod tidy

@@ -17,9 +17,9 @@ func RequestID() gin.HandlerFunc {
 		}
 
 		// 存入 context
-		c.Set(RequestIDKey, rid)
+		c.Set("request_id", rid)
 
-		// 返回给客户端
+		// 响应 header
 		c.Writer.Header().Set(RequestIDKey, rid)
 
 		c.Next()

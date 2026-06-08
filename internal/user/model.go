@@ -1,7 +1,32 @@
 package user
 
+import (
+	"server/internal/rbac"
+	"server/pkg/id"
+	"time"
+
+	"gorm.io/gorm"
+)
+
 type User struct {
-	ID    int64  `gorm:"primaryKey" json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
+	ID int64 `gorm:"primaryKey"`
+
+	Name     string
+	Email    *string `gorm:"uniqueIndex"` // 👈 关键改动（可空 + 唯一）
+	Password string
+
+	Avatar string `gorm:"column:avatar"`
+
+	Role rbac.Role `gorm:"type:varchar(20);default:'user'"`
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+}
+
+func (u *User) BeforeCreate(tx *gorm.DB) error {
+	if u.ID == 0 {
+		u.ID = id.GenerateID()
+	}
+	return nil
 }

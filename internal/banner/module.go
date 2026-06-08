@@ -1,16 +1,15 @@
-package user
+package banner
 
 import "gorm.io/gorm"
 
 type Module struct {
 	Handler *Handler
 	Service *Service
-	Repo    *Repo
+	Repo    *Repository
 }
 
 func NewModule(db *gorm.DB) *Module {
-
-	repo := NewRepo(db)
+	repo := NewRepository(db)
 	service := NewService(repo)
 	handler := NewHandler(service)
 
