@@ -1,6 +1,10 @@
 package banner
 
-import "gorm.io/gorm"
+import (
+	"server/internal/query"
+
+	"gorm.io/gorm"
+)
 
 type Repository struct {
 	db *gorm.DB
@@ -14,22 +18,28 @@ func (r *Repository) Create(b *Banner) error {
 	return r.db.Create(b).Error
 }
 
-func (r *Repository) GetAll() ([]Banner, error) {
-	var list []Banner
-	err := r.db.Find(&list).Error
-	return list, err
-}
-
-func (r *Repository) GetByID(id int64) (Banner, error) {
-	var b Banner
-	err := r.db.First(&b, id).Error
-	return b, err
-}
-
 func (r *Repository) Update(b *Banner) error {
 	return r.db.Save(b).Error
 }
 
 func (r *Repository) Delete(id int64) error {
 	return r.db.Delete(&Banner{}, id).Error
+}
+
+func (r *Repository) Patch(id int64, updates map[string]interface{}) error {
+	return r.db.Model(&Banner{}).
+		Where("id = ?", id).
+		Updates(updates).
+		Error
+}
+
+func (r *Repository) Query(
+	req query.Request,
+) (query.Result, error) {
+
+	return query.Execute(
+		r.db.Model(&Banner{}),
+		&Banner{},
+		req,
+	)
 }

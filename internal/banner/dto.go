@@ -7,3 +7,7 @@ type CreateBannerRequest struct {
 type UpdateBannerRequest struct {
 	Image string `json:"image" binding:"required,url"`
 }
+
+type PatchBannerRequest struct {
+	Image *string `json:"image"`
+}

@@ -33,10 +33,10 @@ func SetupRouter(app *bootstrap.App) *gin.Engine {
 
 	bannerGroup := r.Group("/banners")
 	{
+		bannerGroup.POST("/query", app.Modules.Banner.Handler.Query)
 		bannerGroup.POST("", app.Modules.Banner.Handler.Create)
-		bannerGroup.GET("", app.Modules.Banner.Handler.List)
-		bannerGroup.GET("/:id", app.Modules.Banner.Handler.Get)
 		bannerGroup.PUT("/:id", app.Modules.Banner.Handler.Update)
+		bannerGroup.PATCH("/:id", app.Modules.Banner.Handler.Patch)
 		bannerGroup.DELETE("/:id", app.Modules.Banner.Handler.Delete)
 	}
 
