@@ -5,6 +5,8 @@ import (
 	"server/internal/database"
 	"server/pkg/config"
 	"server/pkg/id"
+	"server/pkg/jwt"
+	"server/pkg/wechat"
 
 	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
@@ -15,6 +17,7 @@ type App struct {
 	DB      *gorm.DB
 	Redis   *redis.Client
 	Modules *app.Modules
+	JWT     *jwt.Service
 }
 
 func NewApp(cfg *config.Config) *App {
@@ -30,12 +33,20 @@ func NewApp(cfg *config.Config) *App {
 		panic(err)
 	}
 
-	modules := app.NewModules(db)
+	wxClient := wechat.NewClient(
+		config.GetEnv("WECHAT_APPID"),
+		config.GetEnv("WECHAT_SECRET"),
+	)
+
+	jwtService := jwt.New(config.GetEnv("JWT_SECRET"))
+
+	modules := app.NewModules(db, wxClient, jwtService, rdb)
 
 	return &App{
 		Config:  cfg,
 		DB:      db,
 		Redis:   rdb,
 		Modules: modules,
+		JWT:     jwtService,
 	}
 }

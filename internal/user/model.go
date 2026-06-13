@@ -12,10 +12,11 @@ type User struct {
 	ID int64 `gorm:"primaryKey"`
 
 	Name     string
-	Email    *string `gorm:"uniqueIndex"` // 👈 关键改动（可空 + 唯一）
+	Email    *string `gorm:"uniqueIndex"`
 	Password string
-
-	Avatar string `gorm:"column:avatar"`
+	OpenID   *string `gorm:"uniqueIndex"`
+	Phone    *string `gorm:"uniqueIndex"`
+	Avatar   string  `gorm:"column:avatar"`
 
 	Role rbac.Role `gorm:"type:varchar(20);default:'user'"`
 

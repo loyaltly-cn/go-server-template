@@ -1,5 +1,7 @@
 # 启动dokcer -> redis & postgreSQL
 
+> 先配置.env的内容
+
 ```shell
 docker compose up -d
 ```

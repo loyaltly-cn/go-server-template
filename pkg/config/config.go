@@ -42,7 +42,7 @@ func Load() *Config {
 
 	var cfg Config
 
-	if _, err := toml.DecodeFile("configs/app.toml", &cfg); err != nil {
+	if _, err := toml.DecodeFile("app.toml", &cfg); err != nil {
 		panic(err)
 	}
 

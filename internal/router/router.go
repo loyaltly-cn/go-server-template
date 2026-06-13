@@ -14,30 +14,66 @@ import (
 func SetupRouter(app *bootstrap.App) *gin.Engine {
 
 	r := gin.New()
+
+	// swagger
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	// global middleware
 	r.Use(middleware.RequestID())
 	r.Use(middleware.Logger())
 	r.Use(middleware.JSONOnly())
 	r.Use(middleware.APIKeyAuth())
 	r.Use(gin.Recovery())
 
+	// health check（不需要 api 前缀）
 	r.GET("/ping", func(c *gin.Context) {
 		common.Success("pong")
 	})
 
-	userGroup := r.Group("/users")
+	// =========================
+	// PUBLIC API（统一 /api）
+	// =========================
+
+	api := r.Group("/api")
+
+	// auth（登录不需要 jwt）
+	authGroup := api.Group("/auth")
 	{
-		userGroup.POST("", app.Modules.User.Handler.CreateUser)
+		authGroup.POST("/login", app.Modules.Auth.Handler.Login)
+	}
+
+	// users（公开查询）
+	userGroup := api.Group("/users")
+	{
 		userGroup.GET("/:id", app.Modules.User.Handler.GetUser)
 	}
 
-	bannerGroup := r.Group("/banners")
+	// banners（公开查询）
+	bannerPublic := api.Group("/banners")
 	{
-		bannerGroup.POST("/query", app.Modules.Banner.Handler.Query)
-		bannerGroup.POST("", app.Modules.Banner.Handler.Create)
-		bannerGroup.PUT("/:id", app.Modules.Banner.Handler.Update)
-		bannerGroup.PATCH("/:id", app.Modules.Banner.Handler.Patch)
-		bannerGroup.DELETE("/:id", app.Modules.Banner.Handler.Delete)
+		bannerPublic.POST("/query", app.Modules.Banner.Handler.Query)
+	}
+
+	// =========================
+	// PRIVATE API（需要 JWT）
+	// =========================
+
+	private := api.Group("")
+	private.Use(middleware.NewJWTMiddleware(app.JWT).Handler())
+	{
+
+		//userPrivate := private.Group("/users")
+		//{
+		//	// 后续扩展用户信息修改等
+		//}
+
+		bannerPrivate := private.Group("/banners")
+		{
+			bannerPrivate.POST("", app.Modules.Banner.Handler.Create)
+			bannerPrivate.PUT("/:id", app.Modules.Banner.Handler.Update)
+			bannerPrivate.PATCH("/:id", app.Modules.Banner.Handler.Patch)
+			bannerPrivate.DELETE("/:id", app.Modules.Banner.Handler.Delete)
+		}
 	}
 
 	return r

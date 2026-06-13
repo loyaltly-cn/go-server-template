@@ -19,3 +19,15 @@ func (r *Repo) GetByID(id int64) (User, error) {
 	err := r.db.First(&u, id).Error
 	return u, err
 }
+
+func (r *Repo) GetByOpenID(openid string) (*User, error) {
+
+	var user User
+
+	err := r.db.
+		Where("open_id = ?", openid).
+		First(&user).
+		Error
+
+	return &user, err
+}
