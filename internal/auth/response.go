@@ -1,13 +1,15 @@
 package auth
 
-type UserResponse struct {
-	ID     int64   `json:"id"`
-	Name   string  `json:"name"`
-	Email  *string `json:"email,omitempty"`
-	Avatar string  `json:"avatar"`
+import "server/internal/rbac"
+
+type MpAuthResp struct {
+	ID     int64     `json:"id"`
+	Name   string    `json:"name"`
+	Avatar string    `json:"avatar"`
+	Role   rbac.Role `json:"role"`
 }
 
-type LoginResponse struct {
-	Token string       `json:"token"`
-	User  UserResponse `json:"user"`
+type LoginMpResponse struct {
+	Token string     `json:"token"`
+	Rep   MpAuthResp `json:"rep"`
 }

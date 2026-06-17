@@ -62,10 +62,10 @@ func SetupRouter(app *bootstrap.App) *gin.Engine {
 	private.Use(middleware.NewJWTMiddleware(app.JWT).Handler())
 	{
 
-		//userPrivate := private.Group("/users")
-		//{
-		//	// 后续扩展用户信息修改等
-		//}
+		authPrivate := private.Group("/auth")
+		{
+			authPrivate.POST("/auto", app.Modules.Auth.Handler.Me)
+		}
 
 		bannerPrivate := private.Group("/banners")
 		{

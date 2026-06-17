@@ -39,7 +39,7 @@ func NewService(
 
 func (s *Service) Login(
 	req LoginRequest,
-) (*LoginResponse, error) {
+) (*LoginMpResponse, error) {
 
 	switch req.Provider {
 
@@ -56,7 +56,7 @@ func (s *Service) Login(
 
 func (s *Service) loginMiniProgram(
 	req LoginRequest,
-) (*LoginResponse, error) {
+) (*LoginMpResponse, error) {
 
 	session, err := s.wechat.Code2Session(req.Code)
 
@@ -109,13 +109,17 @@ func (s *Service) loginMiniProgram(
 		return nil, err
 	}
 
-	return &LoginResponse{
+	return &LoginMpResponse{
 		Token: token,
-		User: UserResponse{
+		Rep: MpAuthResp{
 			ID:     u.ID,
 			Name:   u.Name,
-			Email:  u.Email,
 			Avatar: u.Avatar,
+			Role:   u.Role,
 		},
 	}, nil
+}
+
+func (s *Service) GetMe(userID int64) (*user.User, error) {
+	return s.userRepo.FindByID(userID)
 }

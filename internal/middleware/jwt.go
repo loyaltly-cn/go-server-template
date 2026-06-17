@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -19,7 +20,7 @@ func NewJWTMiddleware(jwt *jwt.Service) *JWTMiddleware {
 
 func (m *JWTMiddleware) Handler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-
+		fmt.Println("JWT MIDDLEWARE HIT")
 		auth := c.GetHeader("Authorization")
 		if auth == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"msg": "missing token"})

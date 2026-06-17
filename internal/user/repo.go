@@ -1,6 +1,8 @@
 package user
 
-import "gorm.io/gorm"
+import (
+	"gorm.io/gorm"
+)
 
 type Repo struct {
 	db *gorm.DB
@@ -30,4 +32,16 @@ func (r *Repo) GetByOpenID(openid string) (*User, error) {
 		Error
 
 	return &user, err
+}
+
+func (r *Repo) FindByID(id int64) (*User, error) {
+
+	var u User
+
+	err := r.db.First(&u, id).Error
+	if err != nil {
+		return nil, err
+	}
+
+	return &u, nil
 }
